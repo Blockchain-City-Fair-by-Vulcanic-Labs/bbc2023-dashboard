@@ -9,12 +9,6 @@ import { useZxing } from "react-zxing";
 const rye = Rye({ weight: "400", subsets: ["latin"] });
 
 export default function Home() {
-  const [user, setUser] = useState<WalletType>({
-    address: "",
-    privateKey: "",
-    phrase: "",
-  });
-
   const router = useRouter();
 
   // TODO: ERROR HANDLING IF WRONG QR IS SCANNED

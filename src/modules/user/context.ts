@@ -8,6 +8,7 @@ import React from "react";
  * set default context values
  */
 const UserContext = React.createContext<UserContextPropsType>({
+  tokenId: 0,
   wallet: {
     address: "",
     privateKey: "",
