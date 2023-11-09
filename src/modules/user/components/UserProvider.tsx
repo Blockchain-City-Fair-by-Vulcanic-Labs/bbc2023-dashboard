@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import {
   UserProviderPropsType,
   UserContextPropsType,
@@ -6,7 +6,7 @@ import {
 } from "../types";
 import UserContext from "../context";
 
-const UserProvider: React.FC<UserProviderPropsType> = (props) => {
+const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
   // allows extraction of config from props
   const { children, ...config } = props;
 

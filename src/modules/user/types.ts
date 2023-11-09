@@ -7,9 +7,6 @@ type UserContextPropsType = {
 };
 
 type UserProviderPropsType = {
-  signIn: (address: string, privateKey: string, phrase: string) => void;
-  signOut: () => void;
-  wallet: WalletType;
   children: ReactNode;
 };
 
