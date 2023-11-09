@@ -19,8 +19,8 @@ export default function Home() {
 
   const handleSignIn = (result: any, error: any) => {
     if (result) {
-      const [address, privateKey, phrase] = result.text.split(",");
-      signIn(address, privateKey, phrase);
+      const [tokenId, address, privateKey, phrase] = result.text.split(",");
+      signIn(tokenId, address, privateKey, phrase);
       router.push("/login");
     }
   };

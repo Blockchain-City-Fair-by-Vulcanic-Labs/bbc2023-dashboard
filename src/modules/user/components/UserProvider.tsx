@@ -10,17 +10,26 @@ const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
   // allows extraction of config from props
   const { children, ...config } = props;
 
+  const [tokenId, setTokenId] = useState<number>(0);
+
   const [wallet, setWallet] = useState<WalletType>({
     address: "",
     privateKey: "",
     phrase: "",
   });
 
-  const signIn = (address: string, privateKey: string, phrase: string) => {
+  const signIn = (
+    tokenId: number,
+    address: string,
+    privateKey: string,
+    phrase: string,
+  ) => {
+    setTokenId(tokenId);
     setWallet({ address, privateKey, phrase });
   };
 
   const signOut = () => {
+    setTokenId(0);
     setWallet({
       address: "",
       privateKey: "",
@@ -29,6 +38,7 @@ const UserProvider: React.FC<{ children: ReactNode }> = (props) => {
   };
 
   const value: UserContextPropsType = {
+    tokenId,
     signIn,
     signOut,
     wallet,

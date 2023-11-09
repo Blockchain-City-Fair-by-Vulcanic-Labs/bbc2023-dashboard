@@ -1,8 +1,14 @@
 import { ReactNode } from "react";
 
 type UserContextPropsType = {
-  signIn: (address: string, privateKey: string, phrase: string) => void;
+  signIn: (
+    tokenId: number,
+    address: string,
+    privateKey: string,
+    phrase: string,
+  ) => void;
   signOut: () => void;
+  tokenId: number;
   wallet: WalletType;
 };
 

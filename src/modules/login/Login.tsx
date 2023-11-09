@@ -18,7 +18,7 @@ function Body() {
   const [user, setUser] = useState<User>({ address: "", key: "", phrase: "" });
 
   const router = useRouter();
-  const { wallet, signOut } = useUser();
+  const { tokenId, wallet, signOut } = useUser();
 
   const handleAttach = (result: any, error: any) => {
     if (result) {
@@ -37,7 +37,8 @@ function Body() {
 
   useEffect(() => {
     // on mount
-    if (wallet.address.length == 0) {
+    if (tokenId == 0) {
+      window.location.reload();
       router.push("/");
     }
   }, []);
