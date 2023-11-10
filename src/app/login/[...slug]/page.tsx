@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Inter, Rye } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ethers } from "ethers";
 
 import { Button } from "../../../modules/shared";
 import { useAvatar } from "@/modules/onchain";
@@ -24,14 +25,20 @@ export default function Page({ params }: { params: { slug: string[] } }) {
   const { slug } = params;
   const [tokenId, address, privateKey] = slug;
 
+  const [goodies, setGoodies] = useState();
+
   const router = useRouter();
 
-  const { getGoodies } = useAvatar();
+  const { getGoodies, error } = useAvatar();
 
   useEffect(() => {
     // on mount
     (async () => {
-      await getGoodies(Number(tokenId), privateKey);
+      // Goodies
+      let g = await getGoodies(Number(tokenId));
+      if (!error) {
+      }
+      console.log("goodies", g);
     })();
   }, []);
 

@@ -1,26 +1,33 @@
-import ethers from "ethers";
+import { useState } from "react";
+import { ethers } from "ethers";
+
+// TODO: TEMPORARY ADD IN .ENV VARIABLE
+const anvilRpcUrl = "http://127.0.0.1:8545";
+const anvilPrivateKey =
+  "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+const anvilContractAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
+const anvilAbi = require("../../../../Avatar.json").abi;
 
 export default function useAvatar() {
-  // TODO: TEMPORARY ADD IN .ENV VARIABLE
-  const anvilRpcUrl = "http://127.0.0.1:8545";
-  const anvilPrivateKey =
-    "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
-  const anvilContractAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
-  const anvilAbi = require("../../../../Avatar.json").abi;
+  const [error, setError] = useState("");
 
-  const getGoodies = async (tokenId: number, privateKey: string) => {
-    const provider = new ethers.JsonRpcProvider(anvilRpcUrl);
-    const signer = new ethers.Wallet(privateKey);
-    const contract = new ethers.Contract(
-      anvilContractAddress,
-      anvilAbi,
-      signer,
-    );
-    const result = await contract.attachments(tokenId);
-    console.log("RESULT", result);
+  const getGoodies = async (tokenId: number): Promise<number> => {
+    try {
+      const provider = new ethers.JsonRpcProvider(anvilRpcUrl);
+      const contract = new ethers.Contract(
+        anvilContractAddress,
+        anvilAbi,
+        provider,
+      );
+      let result = Number(await contract.attachments(tokenId));
+      return result;
+    } catch (err) {
+      setError("GetGoodies: Failed to Get Goodies");
+      return -1;
+    }
   };
 
-  return { getGoodies };
+  return { getGoodies, error };
 }
 
 // const ethers = require("ethers");
