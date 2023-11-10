@@ -9,7 +9,8 @@ const anvilContractAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
 const anvilAbi = require("../../../../Avatar.json").abi;
 
 export default function useAvatar() {
-  const [error, setError] = useState("");
+  const [error, setError] = useState(false);
+  const [diagnostic, setDiagnostic] = useState("");
 
   const getGoodies = async (tokenId: number): Promise<number> => {
     try {
@@ -22,12 +23,13 @@ export default function useAvatar() {
       let result = Number(await contract.attachments(tokenId));
       return result;
     } catch (err) {
-      setError("GetGoodies: Failed to Get Goodies");
+      setError(true);
+      setDiagnostic("GetGoodies: Failed to Get Goodies");
       return -1;
     }
   };
 
-  return { getGoodies, error };
+  return { getGoodies, error, diagnostic };
 }
 
 // const ethers = require("ethers");

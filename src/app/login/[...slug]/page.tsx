@@ -18,29 +18,76 @@ function getImageLink(cid: string, name: string): string {
   return `https://${cid}.ipfs.w3s.link/${name}`;
 }
 
+/*
+ * ----- CONVENTION -----
+ *
+ * goodie[0] =    1 (the least significant bit)
+ * goodie[1] =   10
+ * goodie[2] =  100
+ * goodie[3] = 1000
+ */
+
+const MAX_GOODIE_COUNT = 20;
 const SUPPORT_LINK =
   "http://m.me/61551765092292?text=Hey,%20can%20you%20help%20me";
 
 export default function Page({ params }: { params: { slug: string[] } }) {
   const { slug } = params;
-  const [tokenId, address, privateKey] = slug;
+  const [tokenId, address, privateKey, equipped] = slug;
 
-  const [goodies, setGoodies] = useState();
+  const [goodies, setGoodies] = useState<boolean[]>([]);
+
+  // equipped string
+  let eString = Number(equipped).toString(2);
+  if (eString.length < MAX_GOODIE_COUNT) {
+    eString =
+      new Array(MAX_GOODIE_COUNT - eString.length).fill(0).join("") + eString;
+  }
+  // equipped array
+  const eArray = eString
+    .split("")
+    .reverse()
+    .map((e) => Boolean(Number(e)));
+
+  const [inventory, setInventory] = useState<boolean[]>(eArray);
 
   const router = useRouter();
 
-  const { getGoodies, error } = useAvatar();
+  const { getGoodies, error, diagnostic } = useAvatar();
 
   useEffect(() => {
     // on mount
     (async () => {
       // Goodies
-      let g = await getGoodies(Number(tokenId));
+      let gNum = await getGoodies(Number(tokenId));
+
       if (!error) {
+        console.log("goodies", gNum);
+        // turn gnum to bool[]
+        let gString = gNum.toString(2);
+        // ensure it totals to a string of length MAX_GOODIE_COUNT
+        // MSB - LSB
+        if (gString.length < MAX_GOODIE_COUNT) {
+          gString =
+            new Array(MAX_GOODIE_COUNT - gString.length).fill(0).join("") +
+            gString;
+        }
+        // convert string to array of bool
+        const gArray = gString
+          .split("")
+          .reverse()
+          .map((e) => Boolean(Number(e)));
+        console.log(gArray);
+        setGoodies(gArray);
+      } else {
+        console.error(diagnostic);
       }
-      console.log("goodies", g);
     })();
   }, []);
+
+  const addressToClipboard = () => {
+    navigator.clipboard.writeText(address);
+  };
 
   const handleSignOut = () => {
     router.push("/");
@@ -50,8 +97,26 @@ export default function Page({ params }: { params: { slug: string[] } }) {
     router.push(SUPPORT_LINK);
   };
 
-  const addressToClipboard = () => {
-    navigator.clipboard.writeText(address);
+  const toggleEquip = (idx: number) => {
+    console.log("INVENTORY", inventory);
+
+    let result = 0;
+    if (inventory[idx]) {
+      // remove
+      let beforeBits = new Array(idx).fill(1).join("");
+      let afterBits = new Array(MAX_GOODIE_COUNT - idx - 1).fill(1).join("");
+
+      let maskString = beforeBits + "0" + afterBits;
+      maskString = maskString.split("").reverse().join("");
+      console.log("IN REMOVING", maskString, idx);
+      const mask = parseInt(maskString, 2);
+      console.log("number", mask);
+      result = Number(equipped) & mask;
+    } else {
+      // equip
+      result = Number(equipped) | (2 ** idx);
+    }
+    router.push(`/login/${tokenId}/${address}/${privateKey}/${result}`);
   };
 
   return (
@@ -102,22 +167,46 @@ export default function Page({ params }: { params: { slug: string[] } }) {
         <div>
           <h1
             className={
-              rye.className + " text-xl text-center text-carnival-yellow mt-8"
+              rye.className +
+              " text-xl text-center text-carnival-yellow mt-8 mb-4"
             }
           >
             Inventory
           </h1>
-          <p
-            className={
-              inter.className + " text-sm text-center text-carnival-white mb-4"
-            }
-          >
-            Tap to equip Digital Goodie
-          </p>
+
           <div className="grid grid-cols-4 gap-4">
             {assets.goodies.map((e, idx) => (
-              <div className="text-center bg-carnival-yellow" key={idx}>
-                {idx}
+              <div className="text-center bg-carnival-yellow p-2" key={idx}>
+                {goodies[idx] ? (
+                  <>
+                    <img
+                      src={getImageLink(
+                        assets.goodies[idx].cid,
+                        assets.goodies[idx].name,
+                      )}
+                      alt={assets.goodies[idx].name}
+                    />
+                    <button
+                      onClick={() => toggleEquip(idx)}
+                      className={
+                        inter.className +
+                        ` py-1 px-2 ${
+                          inventory[idx]
+                            ? "bg-carnival-red"
+                            : "bg-carnival-green"
+                        } text-white rounded-md mt-2`
+                      }
+                    >
+                      {inventory[idx] ? "Remove" : "Equip"}
+                    </button>
+                  </>
+                ) : (
+                  <img
+                    className="opacity-50"
+                    src={getImageLink(assets.base.cid, assets.base.name)}
+                    alt={assets.base.name}
+                  />
+                )}
               </div>
             ))}
           </div>

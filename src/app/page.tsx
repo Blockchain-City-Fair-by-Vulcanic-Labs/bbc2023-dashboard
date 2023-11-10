@@ -17,7 +17,7 @@ export default function Home() {
       const [tokenId, address, privateKey, phrase] = result
         .getText()
         .split(",");
-      router.push(`/login/${tokenId}/${address}/${privateKey}`);
+      router.push(`/login/${tokenId}/${address}/${privateKey}/0`);
     },
   });
 
