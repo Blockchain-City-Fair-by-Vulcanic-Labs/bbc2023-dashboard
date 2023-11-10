@@ -3,7 +3,7 @@ import { setMaxListeners } from "events";
 import Image from "next/image";
 import { Inter, Rye } from "next/font/google";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ethers } from "ethers";
 
 import { Button } from "../../../modules/shared";
@@ -57,6 +57,8 @@ export default function Page({ params }: { params: { slug: string[] } }) {
 
   useEffect(() => {
     // on mount
+
+    // load data from chain
     (async () => {
       // Goodies
       let gNum = await getGoodies(Number(tokenId));
@@ -120,7 +122,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
   };
 
   return (
-    <main className="w-screen min-h-screen bg-carnival-navy flex flex-col items-center">
+    <main className="relative w-screen min-h-screen bg-carnival-navy flex flex-col items-center">
       <header className="w-screen flex flex-col items-center">
         <img src="/assets/roofing.png" alt="Dashboard" />
         <img
@@ -157,14 +159,36 @@ export default function Page({ params }: { params: { slug: string[] } }) {
           </button>
         </span>
 
-        <img
-          className="border-8 border-carnival-yellow"
-          src={getImageLink(assets.base.cid, assets.base.name)}
-          alt="Bicol Avatar"
-        />
+        {/*AVATAR SECTION*/}
+        <div className="w-full relative">
+          <div>
+            <img
+              className="border-8 border-carnival-yellow w-full"
+              src={getImageLink(assets.base.cid, assets.base.name)}
+              alt="Bicol Avatar"
+            />
+          </div>
+
+          {inventory.map((isEquipped, idx) => (
+            <>
+              {isEquipped && (
+                <div className="absolute top-0">
+                  <img
+                    className="border-8 border-carnival-yellow w-full"
+                    src={getImageLink(
+                      assets.goodies[idx].cid,
+                      assets.goodies[idx].name,
+                    )}
+                    alt="Bicol Avatar"
+                  />
+                </div>
+              )}
+            </>
+          ))}
+        </div>
 
         {/*INVENTORY SECTION*/}
-        <div>
+        <div className="w-full relative">
           <h1
             className={
               rye.className +
@@ -190,11 +214,11 @@ export default function Page({ params }: { params: { slug: string[] } }) {
                       onClick={() => toggleEquip(idx)}
                       className={
                         inter.className +
-                        ` py-1 px-2 ${
+                        ` py-1 px-1 ${
                           inventory[idx]
                             ? "bg-carnival-red"
                             : "bg-carnival-green"
-                        } text-white rounded-md mt-2`
+                        } text-xs text-white rounded-md mt-2`
                       }
                     >
                       {inventory[idx] ? "Remove" : "Equip"}
