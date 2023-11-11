@@ -199,7 +199,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
           </h1>
 
           <div className="grid grid-cols-4 gap-4">
-            {assets.goodies.map((e, idx) => (
+            {assets.goodies.map((e: any, idx: number) => (
               <div className="text-center bg-carnival-yellow p-2" key={idx}>
                 {goodies[idx] ? (
                   <>
