@@ -3,6 +3,68 @@
 		"name": "base.png",
 		"cid": "bafybeid4ourer4ah5hk44k5im45stwdakkpbpccspwtgtvkct6ttd25wty"
 	},
+	"booths": [
+		{
+			"id": 1,
+			"name": "SparkLearn and SparkPoint",
+			"code": 1,
+			"cid": "bafybeid4ourer4ah5hk44k5im45stwdakkpbpccspwtgtvkct6ttd25wty"
+		},
+		{
+			"id": 2,
+			"name": "Vulcanic Labs",
+			"code": 2,
+			"cid": "bafybeid4ourer4ah5hk44k5im45stwdakkpbpccspwtgtvkct6ttd25wty"
+		},
+		{
+			"id": 3,
+			"name": "ICP.Hub Philippines and DvCode Technologies",
+			"code": 4,
+			"cid": "bafybeid4ourer4ah5hk44k5im45stwdakkpbpccspwtgtvkct6ttd25wty"
+		},
+		{
+			"id": 4,
+			"name": "Honu",
+			"code": 8,
+			"cid": "bafybeid4ourer4ah5hk44k5im45stwdakkpbpccspwtgtvkct6ttd25wty"
+		},
+		{
+			"id": 5,
+			"name": "Bicol University",
+			"code": 16,
+			"cid": "bafybeid4ourer4ah5hk44k5im45stwdakkpbpccspwtgtvkct6ttd25wty"
+		},
+		{
+			"id": 6,
+			"name": "Coins.ph",
+			"code": 32,
+			"cid": "bafybeid4ourer4ah5hk44k5im45stwdakkpbpccspwtgtvkct6ttd25wty"
+		},
+		{
+			"id": 7,
+			"name": "CoinEx",
+			"code": 64,
+			"cid": "bafybeid4ourer4ah5hk44k5im45stwdakkpbpccspwtgtvkct6ttd25wty"
+		},
+		{
+			"id": 8,
+			"name": "MetaSaga Warriors",
+			"code": 128,
+			"cid": "bafybeid4ourer4ah5hk44k5im45stwdakkpbpccspwtgtvkct6ttd25wty"
+		},
+		{
+			"id": 9,
+			"name": "SLTCFI",
+			"code": 256,
+			"cid": "bafybeid4ourer4ah5hk44k5im45stwdakkpbpccspwtgtvkct6ttd25wty"
+		},
+		{
+			"id": 10,
+			"name": "DCTV",
+			"code": 512,
+			"cid": "bafybeid4ourer4ah5hk44k5im45stwdakkpbpccspwtgtvkct6ttd25wty"
+		}
+	],
 	"goodies": [
 		{
 			"name": "1.png",
@@ -43,46 +105,6 @@
 		{
 			"name": "10.png",
 			"cid": "bafybeiddjwxvp5gr6uslmq4bnxoqgqaashvygqjxzphdddt4vpvhf3fj5q"
-		},
-		{
-			"name": "11.png",
-			"cid": "bafybeiagpksjylmh3ey3xlwxcdldutj4jfrbhjcpiui2eczdzm6sqbcas4"
-		},
-		{
-			"name": "12.png",
-			"cid": "bafybeieg3ejap5hjsixsz3hfzwrglwjcq3qbeohw34zlms22sd5mlkxytu"
-		},
-		{
-			"name": "13.png",
-			"cid": "bafybeigm6semj3trgssc4em3er5ztceck4nmgkls2sy5wrg756zjj7frli"
-		},
-		{
-			"name": "14.png",
-			"cid": "bafybeicn5uvw444lalceyuryv753wwdxkb3co64nzp76dybcmjvrj2yw5i"
-		},
-		{
-			"name": "15.png",
-			"cid": "bafybeiaia7bnqusfu75aihh7ghgbf2txrgevhjj7gghsrqr7n2znbhussu"
-		},
-		{
-			"name": "16.png",
-			"cid": "bafybeihbngzfoqkp6rbrupjeg34syyjwpb66gdbkcfv65s34zi3fohyeny"
-		},
-		{
-			"name": "17.png",
-			"cid": "bafybeie6jwlhxs27ezzcl5z5livy5g6oqskxaduvciibkigct2apttmy3u"
-		},
-		{
-			"name": "18.png",
-			"cid": "bafybeifi3ppz7h37vmqrc4jdgncdgegoyfvhravarp4g6w4uljgc6pdym4"
-		},
-		{
-			"name": "19.png",
-			"cid": "bafybeibmcjzhqytukzvqgxjg7beoyzitmnvg5lgtoyyaednbo7k5ewwxjq"
-		},
-		{
-			"name": "20.png",
-			"cid": "bafybeiatpw5ym3rhl4qctzc7shlu2mfl657k5bqxx44obbnnl7dfawuvza"
 		}
 	]
 }

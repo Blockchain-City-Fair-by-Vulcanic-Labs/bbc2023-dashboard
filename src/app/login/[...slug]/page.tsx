@@ -6,17 +6,18 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ethers } from "ethers";
 
-import { Button } from "../../../modules/shared";
+import {
+  Button,
+  getImageLink,
+  integerToBoolArray,
+} from "../../../modules/shared";
+
 import { useAvatar } from "@/modules/onchain";
 
 const assets = require("assets.json");
 
 const inter = Inter({ weight: "400", subsets: ["latin"] });
 const rye = Rye({ weight: "400", subsets: ["latin"] });
-
-function getImageLink(cid: string, name: string): string {
-  return `https://${cid}.ipfs.w3s.link/${name}`;
-}
 
 /*
  * ----- CONVENTION -----
@@ -27,61 +28,38 @@ function getImageLink(cid: string, name: string): string {
  * goodie[3] = 1000
  */
 
-const MAX_GOODIE_COUNT = 20;
+const MAX_GOODIE_COUNT = assets.booths.length;
+
 const SUPPORT_LINK =
   "http://m.me/61551765092292?text=Hey,%20can%20you%20help%20me";
 
 export default function Page({ params }: { params: { slug: string[] } }) {
+  // variables
   const { slug } = params;
   const [tokenId, address, privateKey, equipped] = slug;
 
-  const [goodies, setGoodies] = useState<boolean[]>([]);
+  // states
+  // inventory = tracker for equipped goodies
+  const [inventory, setInventory] = useState<boolean[]>(
+    integerToBoolArray(Number(equipped), MAX_GOODIE_COUNT),
+  );
 
-  // equipped string
-  let eString = Number(equipped).toString(2);
-  if (eString.length < MAX_GOODIE_COUNT) {
-    eString =
-      new Array(MAX_GOODIE_COUNT - eString.length).fill(0).join("") + eString;
-  }
-  // equipped array
-  const eArray = eString
-    .split("")
-    .reverse()
-    .map((e) => Boolean(Number(e)));
-
-  const [inventory, setInventory] = useState<boolean[]>(eArray);
-
+  // hooks
   const router = useRouter();
-
-  const { getGoodies, error, diagnostic } = useAvatar();
+  const { getGoodies, goodies, error, diagnostic } = useAvatar();
 
   useEffect(() => {
     // on mount
 
     // load data from chain
     (async () => {
-      // Goodies
-      let gNum = await getGoodies(Number(tokenId));
+      // Update goodies
+      await getGoodies(Number(tokenId), MAX_GOODIE_COUNT);
 
-      if (!error) {
-        console.log("goodies", gNum);
-        // turn gnum to bool[]
-        let gString = gNum.toString(2);
-        // ensure it totals to a string of length MAX_GOODIE_COUNT
-        // MSB - LSB
-        if (gString.length < MAX_GOODIE_COUNT) {
-          gString =
-            new Array(MAX_GOODIE_COUNT - gString.length).fill(0).join("") +
-            gString;
-        }
-        // convert string to array of bool
-        const gArray = gString
-          .split("")
-          .reverse()
-          .map((e) => Boolean(Number(e)));
-        console.log(gArray);
-        setGoodies(gArray);
-      } else {
+      console.log("goodies", goodies);
+      console.log("inventory", inventory);
+
+      if (error) {
         console.error(diagnostic);
       }
     })();
@@ -89,6 +67,14 @@ export default function Page({ params }: { params: { slug: string[] } }) {
 
   const addressToClipboard = () => {
     navigator.clipboard.writeText(address);
+  };
+
+  const handleClaim = async () => {
+    router.push(`/claim/${tokenId}/${address}/${privateKey}`);
+  };
+
+  const handleShare = () => {
+    router.push(`/share/${tokenId}/${address}/${privateKey}/${equipped}`);
   };
 
   const handleSignOut = () => {
@@ -172,7 +158,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
           {inventory.map((isEquipped, idx) => (
             <>
               {isEquipped && (
-                <div className="absolute top-0">
+                <div className="absolute top-0" key={idx}>
                   <img
                     className="border-8 border-carnival-yellow w-full"
                     src={getImageLink(
@@ -189,6 +175,11 @@ export default function Page({ params }: { params: { slug: string[] } }) {
 
         {/*INVENTORY SECTION*/}
         <div className="w-full relative">
+          <img
+            className="w-full"
+            src="/assets/banderitas.png"
+            alt="Banderitas"
+          />
           <h1
             className={
               rye.className +
@@ -221,7 +212,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
                         } text-xs text-white rounded-md mt-2`
                       }
                     >
-                      {inventory[idx] ? "Remove" : "Equip"}
+                      {inventory[idx] ? "X" : "Add"}
                     </button>
                   </>
                 ) : (
@@ -252,16 +243,8 @@ export default function Page({ params }: { params: { slug: string[] } }) {
           >
             Claim, Share, or Get Help!
           </p>
-          <Button
-            text={"Claim"}
-            func={() => console.log("CLAIMING")}
-            styling="mt-4"
-          />
-          <Button
-            text={"Share Avatar"}
-            func={() => console.log("SHARING AVATAR")}
-            styling="mt-4"
-          />
+          <Button text={"Claim"} func={handleClaim} styling="mt-4" />
+          <Button text={"Share Avatar"} func={handleShare} styling="mt-4" />
           <Button text={"Get Support"} func={handleGetSupport} styling="mt-4" />
           <Button text={"Sign Out"} func={handleSignOut} styling="mt-4" />
         </div>
