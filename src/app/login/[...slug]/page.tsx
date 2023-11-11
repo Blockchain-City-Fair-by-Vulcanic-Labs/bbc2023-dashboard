@@ -195,11 +195,8 @@ export default function Page({ params }: { params: { slug: string[] } }) {
                 {goodies[idx] ? (
                   <>
                     <img
-                      src={getImageLink(
-                        assets.goodies[idx].cid,
-                        assets.goodies[idx].name,
-                      )}
-                      alt={assets.goodies[idx].name}
+                      src={`/assets/icons/${idx + 1}.png`}
+                      alt="Asset Part"
                     />
                     <button
                       onClick={() => toggleEquip(idx)}
