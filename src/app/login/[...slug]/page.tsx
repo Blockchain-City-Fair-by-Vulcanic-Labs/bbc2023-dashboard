@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Inter, Rye } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import mergeImages from "merge-images";
 import { ethers } from "ethers";
 
 import {
@@ -29,6 +30,8 @@ const rye = Rye({ weight: "400", subsets: ["latin"] });
  */
 
 const MAX_GOODIE_COUNT = assets.booths.length;
+const ASSETS_PATH = "/assets";
+const SCALED_SPRITE_PATH = ASSETS_PATH + "/sprite/scaled";
 
 const SUPPORT_LINK =
   "http://m.me/61551765092292?text=Hey,%20can%20you%20help%20me";
@@ -39,6 +42,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
   const [tokenId, address, privateKey, equipped] = slug;
 
   // states
+  const [mergedAvatar, setMergedAvatar] = useState("");
   // inventory = tracker for equipped goodies
   const [inventory, setInventory] = useState<boolean[]>(
     integerToBoolArray(Number(equipped), MAX_GOODIE_COUNT),
@@ -47,23 +51,6 @@ export default function Page({ params }: { params: { slug: string[] } }) {
   // hooks
   const router = useRouter();
   const { getGoodies, goodies, error, diagnostic } = useAvatar();
-
-  useEffect(() => {
-    // on mount
-
-    // load data from chain
-    (async () => {
-      // Update goodies
-      await getGoodies(Number(tokenId), MAX_GOODIE_COUNT);
-
-      console.log("goodies", goodies);
-      console.log("inventory", inventory);
-
-      if (error) {
-        console.error(diagnostic);
-      }
-    })();
-  }, []);
 
   const addressToClipboard = () => {
     navigator.clipboard.writeText(address);
@@ -107,6 +94,37 @@ export default function Page({ params }: { params: { slug: string[] } }) {
     router.push(`/login/${tokenId}/${address}/${privateKey}/${result}`);
   };
 
+  useEffect(() => {
+    // on mount
+
+    // load data from chain
+    (async () => {
+      // Update goodies
+      await getGoodies(Number(tokenId), MAX_GOODIE_COUNT);
+
+      console.log("goodies", goodies);
+      console.log("inventory", inventory);
+
+      if (error) {
+        console.error(diagnostic);
+      }
+
+      try {
+        const merging = [SCALED_SPRITE_PATH + "/base.png"];
+        inventory.forEach((m, idx) => {
+          if (m) {
+            merging.push(SCALED_SPRITE_PATH + `/${idx + 1}.png`);
+          }
+        });
+
+        const img = await mergeImages(merging);
+        setMergedAvatar(img);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  }, []);
+
   return (
     <main className="relative w-screen min-h-screen bg-carnival-navy flex flex-col items-center">
       <header className="w-screen flex flex-col items-center">
@@ -149,28 +167,11 @@ export default function Page({ params }: { params: { slug: string[] } }) {
         <div className="w-full relative">
           <div>
             <img
-              className="border-8 border-carnival-yellow w-full"
-              src={getImageLink(assets.base.cid, assets.base.name)}
+              className="border-8 border-carnival-yellow w-full bg-carnival-yellow"
+              src={mergedAvatar}
               alt="Bicol Avatar"
             />
           </div>
-
-          {inventory.map((isEquipped, idx) => (
-            <>
-              {isEquipped && (
-                <div className="absolute top-0" key={idx}>
-                  <img
-                    className="border-8 border-carnival-yellow w-full"
-                    src={getImageLink(
-                      assets.goodies[idx].cid,
-                      assets.goodies[idx].name,
-                    )}
-                    alt="Bicol Avatar"
-                  />
-                </div>
-              )}
-            </>
-          ))}
         </div>
 
         {/*INVENTORY SECTION*/}

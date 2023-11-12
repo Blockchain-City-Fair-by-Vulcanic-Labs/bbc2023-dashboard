@@ -42,15 +42,14 @@ export default function Page({ params }: { params: { slug: string[] } }) {
   const { slug } = params;
   const [tokenId, address, privateKey, equipped] = slug;
 
-  const [data, setData] = useState(DEFAULT_BOOTH_DATA);
-  const [mergedAvatar, setMergedAvatar] = useState("");
-  const [found, setFound] = useState(false);
-
   // references
   const downloadRef = useRef<HTMLAnchorElement>(null);
 
   // states
   const [downloading, setDownloading] = useState(false);
+  const [data, setData] = useState(DEFAULT_BOOTH_DATA);
+  const [mergedAvatar, setMergedAvatar] = useState("");
+  const [found, setFound] = useState(false);
   // inventory = tracker for equipped goodies
   const [inventory, setInventory] = useState<boolean[]>(
     integerToBoolArray(Number(equipped), MAX_GOODIE_COUNT),
