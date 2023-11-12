@@ -1,4 +1,4 @@
-const images = require("images");
+const mergeImages = require("merge-images");
 
 export async function GET(
   request: Request,

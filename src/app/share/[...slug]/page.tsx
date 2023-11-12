@@ -5,6 +5,7 @@ import { Inter, Rye } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useZxing } from "react-zxing";
+import mergeImages from "merge-images";
 import { ethers } from "ethers";
 
 import {
@@ -30,6 +31,7 @@ const rye = Rye({ weight: "400", subsets: ["latin"] });
  */
 
 const MAX_GOODIE_COUNT = assets.booths.length;
+const SCALED_SPRITE_PATH = "/assets/sprite/scaled";
 const DEFAULT_BOOTH_DATA = { id: 0, booth: "", code: 0 };
 const SUPPORT_LINK =
   "http://m.me/61551765092292?text=Hey,%20can%20you%20help%20me";
@@ -71,9 +73,21 @@ export default function Page({ params }: { params: { slug: string[] } }) {
 
   const handleCopy = () => {};
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     setDownloading(true);
-    console.log("downloading...");
+    try {
+      const merging: string[] = [];
+      inventory.forEach((m, idx) => {
+        if (m) {
+          merging.push(SCALED_SPRITE_PATH + `/${idx + 1}.png`);
+        }
+      });
+
+      const img = await mergeImages(merging);
+      console.log(typeof img, img);
+    } catch (err) {
+      console.error(err);
+    }
     setDownloading(false);
   };
 
