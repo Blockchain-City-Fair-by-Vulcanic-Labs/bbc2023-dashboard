@@ -216,8 +216,8 @@ export default function Page({ params }: { params: { slug: string[] } }) {
                 ) : (
                   <img
                     className="opacity-50"
-                    src={getImageLink(assets.base.cid, assets.base.name)}
-                    alt={assets.base.name}
+                    src={`/assets/logos/${idx + 1}.png`}
+                    alt="Booth Logos"
                   />
                 )}
               </div>

@@ -98,11 +98,8 @@ export default function Page({ params }: { params: { slug: string[] } }) {
               {data.booth}
             </h1>
             <img
-              src={getImageLink(
-                assets.booths[Number(data.id) - 1].cid,
-                "base.png",
-              )}
-              alt={data.booth + " Goodie"}
+              src={`/assets/icons/${data.id}.png`}
+              alt={"Vulcanic Labs Goodie"}
             />
             <Button
               disabled={claiming}
