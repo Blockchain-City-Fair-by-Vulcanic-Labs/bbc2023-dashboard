@@ -31,7 +31,8 @@ const rye = Rye({ weight: "400", subsets: ["latin"] });
  */
 
 const MAX_GOODIE_COUNT = assets.booths.length;
-const SCALED_SPRITE_PATH = "/assets/sprite/scaled";
+const ASSETS_PATH = "/assets";
+const SCALED_SPRITE_PATH = ASSETS_PATH + "/sprite/scaled";
 const DEFAULT_BOOTH_DATA = { id: 0, booth: "", code: 0 };
 const SUPPORT_LINK =
   "http://m.me/61551765092292?text=Hey,%20can%20you%20help%20me";
@@ -42,7 +43,11 @@ export default function Page({ params }: { params: { slug: string[] } }) {
   const [tokenId, address, privateKey, equipped] = slug;
 
   const [data, setData] = useState(DEFAULT_BOOTH_DATA);
+  const [mergedAvatar, setMergedAvatar] = useState("");
   const [found, setFound] = useState(false);
+
+  // references
+  const downloadRef = useRef<HTMLAnchorElement>(null);
 
   // states
   const [downloading, setDownloading] = useState(false);
@@ -71,25 +76,43 @@ export default function Page({ params }: { params: { slug: string[] } }) {
     router.back();
   };
 
-  const handleCopy = () => {};
-
   const handleDownload = async () => {
-    setDownloading(true);
-    try {
-      const merging: string[] = [];
-      inventory.forEach((m, idx) => {
-        if (m) {
-          merging.push(SCALED_SPRITE_PATH + `/${idx + 1}.png`);
-        }
-      });
-
-      const img = await mergeImages(merging);
-      console.log(typeof img, img);
-    } catch (err) {
-      console.error(err);
+    if (downloadRef.current) {
+      setDownloading(true);
+      downloadRef.current.click();
+      setDownloading(false);
     }
-    setDownloading(false);
   };
+
+  useEffect(() => {
+    // on mount
+    (async () => {
+      try {
+        const merging = [
+          {
+            src: SCALED_SPRITE_PATH + "/avatar-bg.png",
+            x: 0,
+            y: 0,
+          },
+          { src: SCALED_SPRITE_PATH + "/base.png", x: 1700, y: 1000 },
+        ];
+        inventory.forEach((m, idx) => {
+          if (m) {
+            merging.push({
+              src: SCALED_SPRITE_PATH + `/${idx + 1}.png`,
+              x: 1700,
+              y: 1000,
+            });
+          }
+        });
+
+        const img = await mergeImages(merging);
+        setMergedAvatar(img);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  }, []);
 
   return (
     <main className="w-screen min-h-screen bg-carnival-navy flex flex-col items-center">
@@ -107,30 +130,11 @@ export default function Page({ params }: { params: { slug: string[] } }) {
 
         {/*AVATAR SECTION*/}
         <div className="w-full relative mt-8">
-          <div>
-            <img
-              className="border-8 border-carnival-yellow w-full"
-              src={getImageLink(assets.base.cid, assets.base.name)}
-              alt="Bicol Avatar"
-            />
-          </div>
-
-          {inventory.map((isEquipped, idx) => (
-            <>
-              {isEquipped && (
-                <div className="absolute top-0" key={idx}>
-                  <img
-                    className="border-8 border-carnival-yellow w-full"
-                    src={getImageLink(
-                      assets.goodies[idx].cid,
-                      assets.goodies[idx].name,
-                    )}
-                    alt="Bicol Avatar"
-                  />
-                </div>
-              )}
-            </>
-          ))}
+          <img
+            className="border-8 border-carnival-yellow w-full bg-carnival-yellow"
+            src={mergedAvatar}
+            alt="Your Bicol Avatar"
+          />
         </div>
 
         <img
@@ -156,12 +160,17 @@ export default function Page({ params }: { params: { slug: string[] } }) {
           {`Just got my LIMITED EDITION Bicol Avatar #${tokenId} for FREE from Blockchain City Fair at Bicol Blockchain Conference 2023. #BlockchainCityFair #BBC2023 #BCFxBBC2023 #VulcanicLabs`}
         </p>
 
-        <Button
-          disabled={downloading}
-          text={downloading ? "Please Wait..." : "Download"}
-          func={handleDownload}
-          styling="mt-4"
-        />
+        {mergedAvatar.length != 0 && (
+          <>
+            <a download ref={downloadRef} href={mergedAvatar} />
+            <Button
+              disabled={downloading}
+              text={downloading ? "Please Wait..." : "Download"}
+              func={handleDownload}
+              styling="mt-4"
+            />
+          </>
+        )}
         <Button text={"Go Back"} func={handleBack} styling="mt-4" />
       </section>
 
