@@ -89,7 +89,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
         )}
 
         {found && (
-          <>
+          <div className="flex flex-col items-center">
             <h1
               className={
                 rye.className + " text-carnival-yellow text-xl text-center my-8"
@@ -107,7 +107,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
               func={() => handleClaim(data.code)}
               styling={`mt-4 ${claiming ? "opacity-50" : "opacity-100"}`}
             />
-          </>
+          </div>
         )}
         <Button text={"Go Back"} func={handleBack} styling="mt-4" />
       </section>
