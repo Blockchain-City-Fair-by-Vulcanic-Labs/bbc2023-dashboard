@@ -93,14 +93,14 @@ export default function Page({ params }: { params: { slug: string[] } }) {
             x: 0,
             y: 0,
           },
-          { src: SCALED_SPRITE_PATH + "/base.png", x: 1700, y: 1000 },
+          { src: SCALED_SPRITE_PATH + "/base.png", x: 1700, y: 1950 },
         ];
         inventory.forEach((m, idx) => {
           if (m) {
             merging.push({
               src: SCALED_SPRITE_PATH + `/${idx + 1}.png`,
               x: 1700,
-              y: 1000,
+              y: 1950,
             });
           }
         });
