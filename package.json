@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/merge-images": "^1.2.4",
     "ethers": "^6.8.1",
     "images": "^3.2.4",
     "merge-images": "^2.0.0",

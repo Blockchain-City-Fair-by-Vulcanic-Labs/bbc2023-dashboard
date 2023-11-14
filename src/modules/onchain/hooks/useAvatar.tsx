@@ -23,6 +23,7 @@ export default function useAvatar() {
   ) => {
     setClaiming(true);
 
+    console.log("contract address", CONTRACT_ADDRESS);
     try {
       const provider = new ethers.JsonRpcProvider(RPC_URL);
       const signer = new ethers.Wallet(privateKey, provider);
