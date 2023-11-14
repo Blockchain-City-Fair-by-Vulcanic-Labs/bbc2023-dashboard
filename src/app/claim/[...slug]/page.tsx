@@ -1,24 +1,20 @@
 "use client";
-import { setMaxListeners } from "events";
-import Image from "next/image";
+// package imports
 import { Inter, Rye } from "next/font/google";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useZxing } from "react-zxing";
-import { ethers } from "ethers";
-
-import {
-  Button,
-  getImageLink,
-  integerToBoolArray,
-} from "../../../modules/shared";
-
+// module imports
 import { useAvatar } from "@/modules/onchain";
+import { Button } from "@/modules/shared";
 
+// initialization
 const assets = require("assets.json");
-
 const inter = Inter({ weight: "400", subsets: ["latin"] });
 const rye = Rye({ weight: "400", subsets: ["latin"] });
+
+// constants
+const DEFAULT_BOOTH_DATA = { id: 0, booth: "", code: 0 };
 
 /*
  * ----- CONVENTION -----
@@ -29,10 +25,6 @@ const rye = Rye({ weight: "400", subsets: ["latin"] });
  * goodie[3] = 1000
  */
 
-const DEFAULT_BOOTH_DATA = { id: 0, booth: "", code: 0 };
-const SUPPORT_LINK =
-  "http://m.me/61551765092292?text=Hey,%20can%20you%20help%20me";
-
 export default function Page({ params }: { params: { slug: string[] } }) {
   // variables
   const { slug } = params;
@@ -40,20 +32,30 @@ export default function Page({ params }: { params: { slug: string[] } }) {
 
   const [data, setData] = useState(DEFAULT_BOOTH_DATA);
   const [found, setFound] = useState(false);
+  const [feedback, setFeedback] = useState("");
 
   // hooks
   const router = useRouter();
   const { claim, claiming, error, diagnostic } = useAvatar();
 
-  // TODO: ERROR HANDLING IF WRONG QR IS SCANNED
   const {
     ref: camRef,
     torch: { on, off },
   } = useZxing({
     onDecodeResult(result) {
       const [id, booth, code] = result.getText().split(",");
-      setData({ id: Number(id), booth, code: Number(code) });
-      setFound(true);
+
+      // check if correct QR is scanned
+      if (
+        assets.booths[Number(id) - 1].name == booth &&
+        assets.booths[Number(id) - 1].code == code
+      ) {
+        setData({ id: Number(id), booth, code: Number(code) });
+        setFound(true);
+      } else {
+        console.error("Invalid QR for claiming. Use a booth claim QR code.");
+        setFeedback("Invalid QR for claiming. Use a booth claim QR code.");
+      }
     },
   });
 
@@ -82,13 +84,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
           Scan Booth Code to Claim
         </h1>
 
-        {!found && (
-          <div className="bg-carnival-yellow my-16 p-8">
-            <video ref={camRef} />
-          </div>
-        )}
-
-        {found && (
+        {found ? (
           <div className="flex flex-col items-center">
             <h1
               className={
@@ -108,7 +104,15 @@ export default function Page({ params }: { params: { slug: string[] } }) {
               styling={`mt-4 ${claiming ? "opacity-50" : "opacity-100"}`}
             />
           </div>
+        ) : (
+          <div className="bg-carnival-yellow my-16 p-8">
+            <video ref={camRef} />
+            <p className={inter.className + " mt-4 text-center text-xs"}>
+              {feedback}
+            </p>
+          </div>
         )}
+
         <Button text={"Go Back"} func={handleBack} styling="mt-4" />
       </section>
 

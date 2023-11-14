@@ -1,25 +1,28 @@
 "use client";
-import { setMaxListeners } from "events";
-import Image from "next/image";
+// package imports
 import { Inter, Rye } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useZxing } from "react-zxing";
 import mergeImages from "merge-images";
-import { ethers } from "ethers";
-
+// module imports
 import {
   Button,
   getImageLink,
   integerToBoolArray,
 } from "../../../modules/shared";
-
 import { useAvatar } from "@/modules/onchain";
 
+// initialization
 const assets = require("assets.json");
-
 const inter = Inter({ weight: "400", subsets: ["latin"] });
 const rye = Rye({ weight: "400", subsets: ["latin"] });
+
+// constants
+const MAX_GOODIE_COUNT = assets.booths.length;
+const ASSETS_PATH = "/assets";
+const SCALED_SPRITE_PATH = ASSETS_PATH + "/sprite/scaled";
+const DEFAULT_BOOTH_DATA = { id: 0, booth: "", code: 0 };
 
 /*
  * ----- CONVENTION -----
@@ -29,14 +32,6 @@ const rye = Rye({ weight: "400", subsets: ["latin"] });
  * goodie[2] =  100
  * goodie[3] = 1000
  */
-
-const MAX_GOODIE_COUNT = assets.booths.length;
-const ASSETS_PATH = "/assets";
-const SCALED_SPRITE_PATH = ASSETS_PATH + "/sprite/scaled";
-const DEFAULT_BOOTH_DATA = { id: 0, booth: "", code: 0 };
-const SUPPORT_LINK =
-  "http://m.me/61551765092292?text=Hey,%20can%20you%20help%20me";
-
 export default function Page({ params }: { params: { slug: string[] } }) {
   // variables
   const { slug } = params;

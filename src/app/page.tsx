@@ -1,15 +1,16 @@
 "use client";
-import { setMaxListeners } from "events";
-import Image from "next/image";
-import { Rye } from "next/font/google";
+import { Inter, Rye } from "next/font/google";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useZxing } from "react-zxing";
 
 const rye = Rye({ weight: "400", subsets: ["latin"] });
+const inter = Inter({ weight: "400", subsets: ["latin"] });
 
 export default function Home() {
   const router = useRouter();
+
+  const [feedback, setFeedback] = useState();
 
   // TODO: ERROR HANDLING IF WRONG QR IS SCANNED
   const { ref: camRef } = useZxing({
@@ -17,6 +18,9 @@ export default function Home() {
       const [tokenId, address, privateKey, phrase] = result
         .getText()
         .split(",");
+
+      // check if correct QR is scanned
+
       router.push(`/login/${tokenId}/${address}/${privateKey}/0`);
     },
   });
@@ -31,6 +35,9 @@ export default function Home() {
 
         <div className="bg-carnival-yellow my-16 p-8">
           <video ref={camRef} />
+          <p className={inter.className + " mt-4 text-center text-xs"}>
+            {feedback}
+          </p>
         </div>
 
         <h1

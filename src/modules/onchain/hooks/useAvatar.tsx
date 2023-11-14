@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 
-import { integerToBoolArray } from "../../../modules/shared";
+import { integerToBoolArray } from "@/modules/shared";
 
-// TODO: TEMPORARY ADD IN .ENV VARIABLE
-const anvilAbi = require("../../../../Avatar.json").abi;
-
-const ABI = anvilAbi;
+const ABI = require("/Avatar.json").abi;
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || "";
-const PRIVATE_KEY = process.env.NEXT_PUBLIC_PRIVATE_KEY || "";
 const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
 
 export default function useAvatar() {
@@ -32,9 +28,6 @@ export default function useAvatar() {
       const signer = new ethers.Wallet(privateKey, provider);
       const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
       // update attachments
-      console.log("token id", tokenId);
-      console.log("signer addy", signer.address);
-      console.log("ownerof", await contract.ownerOf(tokenId));
       await contract.claim(tokenId, bitwiseOrMask);
       // get attachments
       const result = Number(await contract.attachments(tokenId));

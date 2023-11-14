@@ -1,24 +1,24 @@
 "use client";
-import { setMaxListeners } from "events";
-import Image from "next/image";
+// package imports
 import { Inter, Rye } from "next/font/google";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import mergeImages from "merge-images";
-import { ethers } from "ethers";
-
-import {
-  Button,
-  getImageLink,
-  integerToBoolArray,
-} from "../../../modules/shared";
-
+// module imports
 import { useAvatar } from "@/modules/onchain";
+import { Button, integerToBoolArray } from "@/modules/shared";
 
+// initialization
 const assets = require("assets.json");
-
 const inter = Inter({ weight: "400", subsets: ["latin"] });
 const rye = Rye({ weight: "400", subsets: ["latin"] });
+
+// constants
+const MAX_GOODIE_COUNT = assets.booths.length;
+const ASSETS_PATH = "/assets";
+const SCALED_SPRITE_PATH = ASSETS_PATH + "/sprite/scaled";
+const SUPPORT_LINK =
+  "http://m.me/61551765092292?text=Hey,%20can%20you%20help%20me";
 
 /*
  * ----- CONVENTION -----
@@ -28,13 +28,6 @@ const rye = Rye({ weight: "400", subsets: ["latin"] });
  * goodie[2] =  100
  * goodie[3] = 1000
  */
-
-const MAX_GOODIE_COUNT = assets.booths.length;
-const ASSETS_PATH = "/assets";
-const SCALED_SPRITE_PATH = ASSETS_PATH + "/sprite/scaled";
-
-const SUPPORT_LINK =
-  "http://m.me/61551765092292?text=Hey,%20can%20you%20help%20me";
 
 export default function Page({ params }: { params: { slug: string[] } }) {
   // variables
@@ -73,8 +66,6 @@ export default function Page({ params }: { params: { slug: string[] } }) {
   };
 
   const toggleEquip = (idx: number) => {
-    console.log("INVENTORY", inventory);
-
     let result = 0;
     if (inventory[idx]) {
       // remove
@@ -83,9 +74,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
 
       let maskString = beforeBits + "0" + afterBits;
       maskString = maskString.split("").reverse().join("");
-      console.log("IN REMOVING", maskString, idx);
       const mask = parseInt(maskString, 2);
-      console.log("number", mask);
       result = Number(equipped) & mask;
     } else {
       // equip
@@ -101,9 +90,6 @@ export default function Page({ params }: { params: { slug: string[] } }) {
     (async () => {
       // Update goodies
       await getGoodies(Number(tokenId), MAX_GOODIE_COUNT);
-
-      console.log("goodies", goodies);
-      console.log("inventory", inventory);
 
       if (error) {
         console.error(diagnostic);
@@ -265,5 +251,4 @@ export default function Page({ params }: { params: { slug: string[] } }) {
       </footer>
     </main>
   );
-  // return <Body />;
 }
