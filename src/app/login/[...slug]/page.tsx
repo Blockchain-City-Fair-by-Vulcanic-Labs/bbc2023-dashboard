@@ -50,7 +50,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
   };
 
   const handleClaim = async () => {
-    router.push(`/claim/${tokenId}/${address}/${privateKey}`);
+    router.push(`/claim/${tokenId}/${address}/${privateKey}/${equipped}`);
   };
 
   const handleShare = () => {

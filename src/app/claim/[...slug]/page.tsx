@@ -67,6 +67,8 @@ export default function Page({ params }: { params: { slug: string[] } }) {
     await claim(Number(tokenId), privateKey, bitwiseOrMask);
     if (error) {
       console.error(diagnostic);
+    } else {
+      router.push(`/login/${tokenId}/${address}/${privateKey}/${equipped}`);
     }
   };
 
