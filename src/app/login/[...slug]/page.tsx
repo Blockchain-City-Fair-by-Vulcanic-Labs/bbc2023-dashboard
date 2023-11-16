@@ -266,6 +266,12 @@ export default function Page({ params }: { params: { slug: string[] } }) {
             Visit the registration booth or the Vulcanic Labs booth to mint your
             first digital Bicol Avatar!
           </p>
+          <button
+            className="text-carnival-yellow text-xs"
+            onClick={handleSignOut}
+          >
+            Back to Sign In
+          </button>
         </>
       )}
 
