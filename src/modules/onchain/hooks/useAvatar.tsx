@@ -39,6 +39,7 @@ export default function useAvatar() {
     } catch (err) {
       setError(true);
       setDiagnostic(err);
+      return "";
     }
 
     setClaiming(false);
