@@ -20,7 +20,7 @@ export default function useAvatar() {
     tokenId: number,
     privateKey: string,
     bitwiseOrMask: number,
-  ) => {
+  ): Promise<string> => {
     setClaiming(true);
 
     console.log("contract address", CONTRACT_ADDRESS);
@@ -29,11 +29,13 @@ export default function useAvatar() {
       const signer = new ethers.Wallet(privateKey, provider);
       const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
       // update attachments
-      await contract.claim(tokenId, bitwiseOrMask);
+      const tx = await contract.claim(tokenId, bitwiseOrMask);
       // get attachments
       const result = Number(await contract.attachments(tokenId));
       // update goodies
       setGoodies(integerToBoolArray(result, length));
+      console.log("Transaction:", tx);
+      return tx;
     } catch (err) {
       setError(true);
       setDiagnostic(err);

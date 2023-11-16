@@ -64,7 +64,8 @@ export default function Page({ params }: { params: { slug: string[] } }) {
   };
 
   const handleClaim = async (bitwiseOrMask: number) => {
-    await claim(Number(tokenId), privateKey, bitwiseOrMask);
+    const tx = await claim(Number(tokenId), privateKey, bitwiseOrMask);
+    console.log("Transaction Address:", tx);
     if (error) {
       console.error(diagnostic);
     } else {
