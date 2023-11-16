@@ -34,9 +34,10 @@ export default function useAvatar() {
       const result = Number(await contract.attachments(tokenId));
       // update goodies
       setGoodies(integerToBoolArray(result, length));
-      console.log("Transaction:", tx);
+      setError(false);
       return tx;
     } catch (err) {
+      console.log(err);
       setError(true);
       setDiagnostic(err);
       return "";
