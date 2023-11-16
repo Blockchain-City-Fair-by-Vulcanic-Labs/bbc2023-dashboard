@@ -12,13 +12,10 @@ export default function Home() {
 
   const [feedback, setFeedback] = useState();
 
-  // TODO: ERROR HANDLING IF NO AVATAR MINTED YET
   // TODO: ERROR HANDLING IF WRONG QR IS SCANNED
   const { ref: camRef } = useZxing({
     onDecodeResult(result) {
-      const [tokenId, address, privateKey, phrase] = result
-        .getText()
-        .split(",");
+      const [tokenId, address, privateKey] = result.getText().split(",");
 
       // check if correct QR is scanned
       router.push(`/login/${tokenId}/${address}/${privateKey}/0`);

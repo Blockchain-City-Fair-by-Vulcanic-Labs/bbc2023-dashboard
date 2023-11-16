@@ -42,29 +42,14 @@ export default function Page({ params }: { params: { slug: string[] } }) {
 
   // states
   const [downloading, setDownloading] = useState(false);
-  const [data, setData] = useState(DEFAULT_BOOTH_DATA);
   const [mergedAvatar, setMergedAvatar] = useState("");
-  const [found, setFound] = useState(false);
   // inventory = tracker for equipped goodies
-  const [inventory, setInventory] = useState<boolean[]>(
+  const [inventory, _] = useState<boolean[]>(
     integerToBoolArray(Number(equipped), MAX_GOODIE_COUNT),
   );
 
   // hooks
   const router = useRouter();
-  const { claim, claiming, error, diagnostic } = useAvatar();
-
-  // TODO: ERROR HANDLING IF WRONG QR IS SCANNED
-  const {
-    ref: camRef,
-    torch: { on, off },
-  } = useZxing({
-    onDecodeResult(result) {
-      const [id, booth, code] = result.getText().split(",");
-      setData({ id: Number(id), booth, code: Number(code) });
-      setFound(true);
-    },
-  });
 
   const handleBack = () => {
     router.back();

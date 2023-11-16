@@ -35,6 +35,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
   const [tokenId, address, privateKey, equipped] = slug;
 
   // states
+  const [minted, setMinted] = useState(false);
   const [mergedAvatar, setMergedAvatar] = useState("");
   // inventory = tracker for equipped goodies
   const [inventory, setInventory] = useState<boolean[]>(
@@ -43,7 +44,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
 
   // hooks
   const router = useRouter();
-  const { getGoodies, goodies, error, diagnostic } = useAvatar();
+  const { getGoodies, hasMinted, goodies, error, diagnostic } = useAvatar();
 
   const addressToClipboard = () => {
     navigator.clipboard.writeText(address);
@@ -85,12 +86,18 @@ export default function Page({ params }: { params: { slug: string[] } }) {
 
   useEffect(() => {
     // on mount
-
-    // load data from chain
     (async () => {
+      const response = await hasMinted(address, Number(tokenId));
+      setMinted(response);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!minted) return;
+    (async () => {
+      // Load data from chain
       // Update goodies
       await getGoodies(Number(tokenId), MAX_GOODIE_COUNT);
-
       if (error) {
         console.error(diagnostic);
       }
@@ -109,7 +116,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
         console.error(err);
       }
     })();
-  }, []);
+  }, [hasMinted]);
 
   return (
     <main className="relative w-screen min-h-screen bg-carnival-navy flex flex-col items-center">
@@ -121,118 +128,146 @@ export default function Page({ params }: { params: { slug: string[] } }) {
           alt="Dashboard"
         />
       </header>
+      {minted ? (
+        <>
+          {/*CONTENT SECTION*/}
+          <section className="p-12">
+            <h1
+              className={
+                rye.className +
+                " text-3xl text-center text-carnival-yellow mb-4"
+              }
+            >
+              {`Bicol Avatar #${tokenId}`}
+            </h1>
 
-      {/*CONTENT SECTION*/}
-      <section className="p-12">
-        <h1
-          className={
-            rye.className + " text-3xl text-center text-carnival-yellow mb-4"
-          }
-        >
-          {`Bicol Avatar #${tokenId}`}
-        </h1>
+            <span
+              className={
+                inter.className +
+                " bg-carnival-green p-2 rounded-md flex items-center justify-center mb-4"
+              }
+            >
+              <h2 className={"text-lg text-center text-carnival-white mr-2"}>
+                {`${address.slice(0, 6)}...${address.slice(-4)}`}
+              </h2>
+              <button
+                className="text-carnival-yellow text-xs"
+                onClick={addressToClipboard}
+              >
+                Copy
+              </button>
+            </span>
 
-        <span
-          className={
-            inter.className +
-            " bg-carnival-green p-2 rounded-md flex items-center justify-center mb-4"
-          }
-        >
-          <h2 className={"text-lg text-center text-carnival-white mr-2"}>
-            {`${address.slice(0, 6)}...${address.slice(-4)}`}
-          </h2>
-          <button
-            className="text-carnival-yellow text-xs"
-            onClick={addressToClipboard}
-          >
-            Copy
-          </button>
-        </span>
-
-        {/*AVATAR SECTION*/}
-        <div className="w-full relative">
-          <div>
-            <img
-              className="border-8 border-carnival-yellow w-full bg-carnival-yellow"
-              src={mergedAvatar}
-              alt="Bicol Avatar"
-            />
-          </div>
-        </div>
-
-        {/*INVENTORY SECTION*/}
-        <div className="w-full relative">
-          <img
-            className="w-full"
-            src="/assets/banderitas.png"
-            alt="Banderitas"
-          />
-          <h1
-            className={
-              rye.className +
-              " text-xl text-center text-carnival-yellow mt-8 mb-4"
-            }
-          >
-            Inventory
-          </h1>
-
-          <div className="grid grid-cols-4 gap-4">
-            {assets.goodies.map((e: any, idx: number) => (
-              <div className="text-center bg-carnival-yellow p-2" key={idx}>
-                {goodies[idx] ? (
-                  <>
-                    <img
-                      src={`/assets/icons/${idx + 1}.png`}
-                      alt="Asset Part"
-                    />
-                    <button
-                      onClick={() => toggleEquip(idx)}
-                      className={
-                        inter.className +
-                        ` py-1 px-1 ${
-                          inventory[idx]
-                            ? "bg-carnival-red"
-                            : "bg-carnival-green"
-                        } text-xs text-white rounded-md mt-2`
-                      }
-                    >
-                      {inventory[idx] ? "X" : "Add"}
-                    </button>
-                  </>
-                ) : (
-                  <img
-                    className="opacity-50"
-                    src={`/assets/logos/${idx + 1}.png`}
-                    alt="Booth Logos"
-                  />
-                )}
+            {/*AVATAR SECTION*/}
+            <div className="w-full relative">
+              <div>
+                <img
+                  className="border-8 border-carnival-yellow w-full bg-carnival-yellow"
+                  src={mergedAvatar}
+                  alt="Bicol Avatar"
+                />
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/*BUTTONS SECTION*/}
-        <div>
+            {/*INVENTORY SECTION*/}
+            <div className="w-full relative">
+              <img
+                className="w-full"
+                src="/assets/banderitas.png"
+                alt="Banderitas"
+              />
+              <h1
+                className={
+                  rye.className +
+                  " text-xl text-center text-carnival-yellow mt-8 mb-4"
+                }
+              >
+                Inventory
+              </h1>
+
+              <div className="grid grid-cols-4 gap-4">
+                {assets.goodies.map((e: any, idx: number) => (
+                  <div className="text-center bg-carnival-yellow p-2" key={idx}>
+                    {goodies[idx] ? (
+                      <>
+                        <img
+                          src={`/assets/icons/${idx + 1}.png`}
+                          alt="Asset Part"
+                        />
+                        <button
+                          onClick={() => toggleEquip(idx)}
+                          className={
+                            inter.className +
+                            ` py-1 px-1 ${
+                              inventory[idx]
+                                ? "bg-carnival-red"
+                                : "bg-carnival-green"
+                            } text-xs text-white rounded-md mt-2`
+                          }
+                        >
+                          {inventory[idx] ? "X" : "Add"}
+                        </button>
+                      </>
+                    ) : (
+                      <img
+                        className="opacity-50"
+                        src={`/assets/logos/${idx + 1}.png`}
+                        alt="Booth Logos"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/*BUTTONS SECTION*/}
+            <div>
+              <h1
+                className={
+                  rye.className +
+                  " text-xl text-center text-carnival-yellow mt-8"
+                }
+              >
+                Functions
+              </h1>
+              <p
+                className={
+                  inter.className +
+                  " text-sm text-center text-carnival-white mb-4"
+                }
+              >
+                Claim, Share, or Get Help!
+              </p>
+              <Button text={"Claim"} func={handleClaim} styling="mt-4" />
+              <Button text={"Share Avatar"} func={handleShare} styling="mt-4" />
+              <Button
+                text={"Get Support"}
+                func={handleGetSupport}
+                styling="mt-4"
+              />
+              <Button text={"Sign Out"} func={handleSignOut} styling="mt-4" />
+            </div>
+          </section>
+        </>
+      ) : (
+        <>
           <h1
             className={
-              rye.className + " text-xl text-center text-carnival-yellow mt-8"
+              rye.className + " text-xl text-center text-carnival-yellow p-4"
             }
           >
-            Functions
+            Oops! You have no Bicol Avatar yet!
           </h1>
           <p
             className={
-              inter.className + " text-sm text-center text-carnival-white mb-4"
+              inter.className + " text-sm text-center text-carnival-white p-4"
             }
           >
-            Claim, Share, or Get Help!
+            Visit the registration booth or the Vulcanic Labs booth to mint your
+            first digital Bicol Avatar!
           </p>
-          <Button text={"Claim"} func={handleClaim} styling="mt-4" />
-          <Button text={"Share Avatar"} func={handleShare} styling="mt-4" />
-          <Button text={"Get Support"} func={handleGetSupport} styling="mt-4" />
-          <Button text={"Sign Out"} func={handleSignOut} styling="mt-4" />
-        </div>
-      </section>
+        </>
+      )}
 
       <footer className="w-screen flex flex-col items-center">
         <p

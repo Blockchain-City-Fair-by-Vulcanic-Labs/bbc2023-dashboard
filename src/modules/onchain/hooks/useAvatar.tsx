@@ -58,5 +58,17 @@ export default function useAvatar() {
     }
   };
 
-  return { claim, getGoodies, claiming, goodies, error, diagnostic };
+  const hasMinted = async (address: string, tokenId: number) => {
+    const provider = new ethers.JsonRpcProvider(RPC_URL);
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
+    try {
+      const response = await contract.ownerOf(tokenId);
+      return response == address;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  };
+
+  return { claim, getGoodies, hasMinted, claiming, goodies, error, diagnostic };
 }
